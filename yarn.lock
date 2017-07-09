@@ -3169,6 +3169,10 @@ react-native-button@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-button/-/react-native-button-2.0.0.tgz#5b798f0ac8c9c5bfd495c7f5f308beb49ed40a4b"
 
+react-native-camera@0.6:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-0.6.0.tgz#dd2760b7857d660761c78f2da575b494fdc8dcb5"
+
 react-native-dismiss-keyboard@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/react-native-dismiss-keyboard/-/react-native-dismiss-keyboard-1.0.0.tgz#32886242b3f2317e121f3aeb9b0a585e2b879b49"

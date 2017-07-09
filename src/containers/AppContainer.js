@@ -15,7 +15,7 @@ export default class AppContainer extends Component {
             hideNavBar
           />
           <Scene
-            key="pageTwo"
+            key="camera"
             component={Camera}
             title="Camera"
             hideNavBar

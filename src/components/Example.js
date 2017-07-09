@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight } from 'react-native';
 import { Container, Header, Content, Footer, Title, Icon } from 'native-base';
 import { Actions } from 'react-native-router-flux';
 
@@ -15,13 +15,22 @@ export default class Example extends Component {
           <Text>Hallo</Text>
         </Content>
         <Footer>
-          <Title>
-              <Icon
-                onPress={Actions.pageTwo}
+          <TouchableHighlight
+            // onPress={() => { console.log('Click'); }}
+            onPress={Actions.camera}
+          >
+            <Title>
+              <Text
+              >
+                Klick mich
+              </Text>
+              {/* <Icon
                 name="camera"
                 style={{fontSize: 50}}
-              />
-          </Title>
+                onPress={Actions.camera}
+              /> */}
+            </Title>
+        </TouchableHighlight>
         </Footer>
       </Container>
     );
