@@ -3201,6 +3201,10 @@ react-native-easy-grid@0.1.9:
   dependencies:
     lodash "^4.11.1"
 
+react-native-file-uploader@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-file-uploader/-/react-native-file-uploader-0.0.2.tgz#cfd2c8b52c78a256da59c69beb0cfa5c16530c4e"
+
 react-native-keyboard-aware-scroll-view@0.2.9:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/react-native-keyboard-aware-scroll-view/-/react-native-keyboard-aware-scroll-view-0.2.9.tgz#2a1ae49cfae90a9665b21763c1f8bd03ed5fb92c"
