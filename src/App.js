@@ -1,22 +1,31 @@
-// @flow
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
-import {Container, Header, Content, Footer, Title } from 'native-base';
+import AppContainer from './containers/AppContainer';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware, combineReducers, compose} from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { createLogger } from 'redux-logger';
+import reducer from './reducers';
+
+const loggerMiddleware = createLogger({ predicate: (getState, action) => __DEV__  });
+
+function configureStore(initialState) {
+  const enhancer = compose(
+    applyMiddleware(
+      thunkMiddleware,
+      loggerMiddleware,
+    ),
+  );
+  return createStore(reducer, initialState, enhancer);
+}
+
+const store = configureStore({});
 
 export default class App extends Component {
   render() {
     return (
-      <Container>
-        <Header>
-            <Title>Header</Title>
-        </Header>
-        <Content>
-          <Text>Hallo</Text>
-        </Content>
-        <Footer>
-          <Title>Footer</Title>
-        </Footer>
-      </Container>
+      <Provider store={store}>
+        <AppContainer />
+      </Provider>
     );
   }
 }
