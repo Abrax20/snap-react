@@ -50,23 +50,6 @@
             return $ipaddress;
         }
 
-        public function check_auth_token($auth_token){
-            if($this->pdo != false){
-                $result = $this->pdo->query("SELECT * FROM token WHERE auth_token='" . $auth_token . "'");
-                if (!$result) {
-                    return false;
-                }else{
-                    $control = 0;
-                    while($row = $result->fetch()){ $control++; }
-                    if($control > 0){
-                        return true;
-                    }
-                }
-            }else{
-                return false;
-            }
-        }
-
         public function CheckMysqlTable(string $table_name){
             $query = $this->pdo->query("SHOW TABLES LIKE '$table_name'");
             if($query->fetchColumn() > 0){
@@ -166,93 +149,6 @@
         }
     }
 
-    class Auth {
-        public $answer_obj = [
-            'answer' => false,
-        ];
-
-        public $pdo;
-
-        public function __construct($pdo){
-            $this->pdo = $pdo;
-        }
-
-        public function echoanswerObj(){
-            echo json_encode($this->answer_obj);
-        }
-
-        public function getanswerObj(){
-            return $this->answer_obj;
-        }
-
-        public function getanswerString(){
-            return json_encode($this->answer_obj);
-        }
-
-        private function new_Tocken_checker($token, $pdo){
-            $control = 0;
-            $token_query = $pdo->query("SELECT * FROM token WHERE auth_token='{$token}'");
-            while($row = $token_query->fetch()){ $control++; }
-            if($control == 0 || $control < 1){
-                return true;
-            }else{
-                return false;
-            }
-        }
-
-        public function login($username, $password) {
-          $auth_query = $this->pdo->query("SELECT * FROM users WHERE name='{$username}' AND password='{$password}'");
-          $control = 0;
-          while($row = $auth_query->fetch()){ $control++; }
-          if($control == 1){
-            foreach ($auth_query = $this->pdo->query("SELECT * FROM users WHERE name='{$username}' AND password='{$password}'") as $row) { $userid = $row["id"]; }
-            $token = bin2hex(openssl_random_pseudo_bytes(64));
-            while($this->new_Tocken_checker($token, $this->pdo) != true){
-              $token = bin2hex(openssl_random_pseudo_bytes(64));
-            }
-            $token_insert_query = $this->pdo->query("INSERT INTO `token` (`userId`, `auth_token`) VALUES ('{$userid}', '{$token}')");
-
-            $this->answer_obj['auth_token'] = $token;
-            $this->answer_obj['answer'] = true;
-          }elseif($control > 1){
-            $this->answer_obj['error']['error_type'] = "server";
-            $this->answer_obj['error']['error_number'] = "102";
-            $this->answer_obj['error']['error_message'] = "Internal Backend Error 102";
-          }
-        }
-
-        public function check_auth_token($auth_token){
-          $result = $this->pdo->query("SELECT * FROM token WHERE `auth_token`='" . $auth_token . "'");
-          if (!$result) {
-            $this->answer_obj['error']['error_type'] = "Server";
-            $this->answer_obj['error']['error_number'] = "103";
-            $this->answer_obj['error']['error_message'] = "Internal Backend Error 103";
-          }else{
-            $control = 0;
-            while($row = $result->fetch()){ $control++; }
-                if($control > 0){
-                  $this->answer_obj['answer'] = true;
-                }
-            }
-        }
-
-        public function logout($auth_token){
-          $result = $this->pdo->query("SELECT * FROM `token` WHERE `auth_token`='" . $auth_token . "'");
-          if (!$result) {
-            $this->answer_obj['error']['error_type'] = "Server";
-            $this->answer_obj['error']['error_number'] = "112";
-            $this->answer_obj['error']['error_message'] = "Internal Backend Error 112";
-          }else{
-            $control = 0;
-            while($row = $result->fetch()){ $control++; }
-            if($control > 0){
-              $delete_resulte = $this->pdo->query("DELETE FROM `token` WHERE `auth_token`='" . $auth_token . "'");
-              $this->answer_obj['answer'] = true;
-            }
-          }
-        }
-    }
-
     class Setup {
         public $pdo;
         public $system_class;
@@ -279,79 +175,6 @@
                 }
                 $this->system_class->CreateMysqlTable($tables_titles[$x], $array);
             }
-        }
-
-    }
-
-    class Api {
-        public $pdo;
-        public $project;
-        public $system_class;
-
-        public function __construct($pdo){
-          $this->pdo = $pdo;
-          // $this->project = $project;
-          $this->system_class = new System($this->pdo);
-        }
-
-        public function ArraytoObject($array){
-
-        }
-
-        public function getListOfPage($limit = 0){
-          if ($limit < 0) {
-           $query = $this->pdo->query("SELECT * FROM `pages` LIMIT {$limit}");
-          } else {
-            $query = $this->pdo->query("SELECT * FROM `pages`");
-          }
-          return $query->fetchAll();
-        }
-
-        public function getPageWithId($pageId){
-          $query = $this->pdo->query("SELECT * FROM `pages` WHERE `id`='{$pageId}'");
-          return $query->fetch();
-        }
-
-        public function getUserWithId($userId){
-          $query = $this->pdo->query("SELECT * FROM `users` WHERE `id`='{$userId}'");
-          return $query->fetch();
-        }
-
-        public function getUserWithToken($token){
-          $query = $this->pdo->query("SELECT * FROM `token` WHERE `auth_token`='{$token}'");
-          $token_data = $query->fetch(0);
-          $query = $this->pdo->query("SELECT * FROM `users` WHERE `id`='{$token_data['userId']}'");
-          return $query->fetch(0);
-        }
-
-        public function getContentWithId($conentId){
-          $query = $this->pdo->query("SELECT * FROM `content` WHERE `id`='{$conentId}'");
-          return $query->fetch();
-        }
-
-        public function getContentWithPageId($pageId){
-          $query = $this->pdo->query("SELECT * FROM `content` WHERE `pageId`='{$pageId}'");
-          return $query->fetchAll();
-        }
-
-        public function addContent($pageId, $content){
-          return $this->pdo->query("INSERT INTO `content`(`pageId`, `data`) VALUES ('{$pageId}', '" . json_encode($content) . "'')");
-        }
-
-        public function removeContentWithId($pageId){
-          return $this->pdo->query("DELETE FROM `content` WHERE `id`='{$pageId}'");
-        }
-
-        public function addUser($name, $password, $permissions){
-          return $this->pdo->query("INSERT INTO `user`(`name`, `password`, `permissions`) VALUES ('{$pageId}', '" . json_encode($content) . "', '{$password}',  '{$permissions}')");
-        }
-
-        public function removeUserWithId($userId){
-          return $this->pdo->query("DELETE FROM `users` WHERE `id`='{$userId}'");
-        }
-
-        public function checkAuth($token){
-          return true;
         }
 
     }
