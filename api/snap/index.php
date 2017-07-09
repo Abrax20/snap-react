@@ -20,8 +20,13 @@
 
     if(isset($_POST['auth_token']) && @$_POST['auth_token'] != "" && @$_POST['mission'] == "upload" && @$_POST['auth_token'] != null) {
         if($system->check_auth_token($_POST['auth_token'])){
-                    $uploaddir = '/snap-react/uploads/snap/';
-                    $uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
+            $userID = $system->getUserid($_POST['auth_token']);
+     
+            $uploaddir = '../uploads/snap/' . $userID;
+            if(is_dir(!$uploaddir)) {  
+                mkdir($uploaddir);
+            }
+            $uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
 
                     echo '<pre>';
                     if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
